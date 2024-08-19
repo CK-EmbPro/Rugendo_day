@@ -1,0 +1,23 @@
+package rw.app.urugendo.day.models.Bus.dayBus.dto;
+
+import lombok.*;
+
+import java.util.UUID;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DayBusDto {
+    @NonNull
+    private UUID dayBusId;
+    @NonNull
+    private UUID schoolId;
+    @NonNull
+    private int nOfSeats;
+    @NonNull
+    private UUID gpsId;
+    @NonNull
+    private String plateNo;
+}

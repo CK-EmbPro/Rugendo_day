@@ -6,16 +6,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
 import rw.app.urugendo.day.models.Bus.dayBus.dto.DayBusDto;
+import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.AssignedDriver;
 import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.dto.AssignedDriverDto;
+import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.utils.AssignedDriverMapper;
 import rw.app.urugendo.day.models.Driver.dayDriver.registeredDriver.dto.RegisteredDriverDto;
+import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.DayTicket;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.Seat;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookedDayTicketDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.CreateDayTicketDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.DayTicketDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.SeatDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.utils.DayTicketsMapper;
+import rw.app.urugendo.day.repositories.Driver.day.assigned.AssignedDayDriverRepo;
 import rw.app.urugendo.day.repositories.tickets.day.DayTicketRepo;
 import rw.app.urugendo.day.services.Bus.day.impl.DayBusServiceImpl;
 import rw.app.urugendo.day.services.Driver.day.impl.DayDriverServiceImpl;
 import rw.app.urugendo.day.services.ticket.day.DayTicketService;
+import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +37,8 @@ public class DayTicketServiceImpl implements DayTicketService {
     private final DayTicketRepo dayTicketRepo;
     private final DayDriverServiceImpl dayDriverService;
     private final DayBusServiceImpl busService;
+    private final AssignedDayDriverRepo assignedDayDriverRepo;
+    private final SeatServiceImpl seatService;
 
     @Override
     public DayTicketDto registerDayTicket(CreateDayTicketDto createDayTicketDto) {
@@ -57,11 +67,45 @@ public class DayTicketServiceImpl implements DayTicketService {
         DayTicketDto ticketDto = null;
         String email = dayTicketDto.getAssignedDriver();
         String plateNo = dayTicketDto.getAssignedCar();
+        UUID ticketId1 = dayTicketDto.getTicketId();
+        UUID schoolId = dayTicketDto.getSchoolId();
         try {
+            Optional<DayTicket> toBeUpdated = dayTicketRepo.findById(ticketId);
+            if (toBeUpdated.isEmpty()) throw new ResourceNotFoundException("Ticket not found");
+
             RegisteredDriverDto registeredDriver = dayDriverService.getRegisteredDriverByEmail(email);
             DayBusDto registeredBus = busService.getDayBusByPlateNo(plateNo);
+            AssignedDriverDto assignedDriver = dayDriverService.getAssignedDriverByTicketId(ticketId1);
 
-            AssignedDriverDto
+
+            if (!assignedDriver.getEmail().equals(dayTicketDto.getAssignedDriver())){
+                assignedDriver.setEmail(dayTicketDto.getAssignedDriver());
+            }
+            if (!assignedDriver.getCarPlateNo().equals(dayTicketDto.getAssignedCar())){
+                assignedDriver.setCarPlateNo(dayTicketDto.getAssignedCar());
+            }
+            if(!assignedDriver.getSchoolId().equals(dayTicketDto.getSchoolId())){
+                assignedDriver.setSchoolId(dayTicketDto.getSchoolId());
+            }
+            assignedDayDriverRepo.save(AssignedDriverMapper.assignedDriverDtoToAssignedDriver(assignedDriver));
+
+            toBeUpdated.get().setSchoolId(dayTicketDto.getSchoolId());
+            toBeUpdated.get().setDeparturePoint(dayTicketDto.getDeparturePoint());
+            toBeUpdated.get().setDestinationPoint(dayTicketDto.getDestinationPoint());
+            toBeUpdated.get().setMorningArrivalTime(dayTicketDto.getMorningArrivalTime());
+            toBeUpdated.get().setMorningDepartTime(dayTicketDto.getMorningDepartTime());
+            toBeUpdated.get().setNoonArrivalTime(dayTicketDto.getNoonArrivalTime());
+            toBeUpdated.get().setNoonDepartTime(dayTicketDto.getNoonDepartTime());
+            toBeUpdated.get().setEveningArrivalTime(dayTicketDto.getEveningArrivalTime());
+            toBeUpdated.get().setEveningDepartTime(dayTicketDto.getEveningDepartTime());
+            toBeUpdated.get().setPrice(dayTicketDto.getPrice());
+            toBeUpdated.get().setAssignedCar(dayTicketDto.getAssignedCar());
+            toBeUpdated.get().setAssignedDriver(dayTicketDto.getAssignedDriver());
+            toBeUpdated.get().setTicketStatus(dayTicketDto.getTicketStatus());
+
+            DayTicket updatedTicket = dayTicketRepo.save(toBeUpdated.get());
+            ticketDto = DayTicketsMapper.dayTicketToDayTicketDto(updatedTicket);
+
         }catch (ResourceNotFoundException e){
             log.error(e.getMessage());
         }catch (Exception e){
@@ -70,69 +114,115 @@ public class DayTicketServiceImpl implements DayTicketService {
     return ticketDto;
     }
 
+
+
     @Override
-    public List<DayTicketDto> getAvailableTickets() {
+    public List<DayTicketDto> getAvailableDayTickets() {
+        List<DayTicketDto> availableTickets = null;
         try {
-            List<BoardingTicketDto> availableTickets = boardingTicketRepository.findTicketByTicketStatus(ETicketStatus.AVAILABLE)
+            availableTickets = dayTicketRepo.findDayTicketsByTicketStatus(ETicketStatus.AVAILABLE)
                     .stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(
-                            BoardingTicketsMapper::ticketToTicketDto
+                            DayTicketsMapper::dayTicketToDayTicketDto
                     )
                     .toList();
 
-            return availableTickets;
         }catch (Exception e ){
             log.error("Something bad happened: {}", e.getMessage());
         }
 
+        return availableTickets;
+
     }
 
     @Override
-    public List<BookedBoardingTicketDto> getBookedTickets() {
+    public List<BookedDayTicketDto> getBookedDayTickets() {
+        List<BookedDayTicketDto> bookedTicketSeats = null;
         try {
-            List<BookedBoardingTicketDto> bookedTickets = boardingTicketRepository.findTicketByTicketStatus(ETicketStatus.BOOKED)
+            List<DayTicketDto> bookedTickets = dayTicketRepo.findDayTicketsByTicketStatus(ETicketStatus.BOOKED)
                     .stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(
-                            BoardingTicketsMapper::ticketToBookedTickedDto
+                            DayTicketsMapper::dayTicketToDayTicketDto
                     )
                     .collect(Collectors.toList());
 
-            return bookedTickets;
+            for(DayTicketDto dayTicket: bookedTickets){
+                UUID ticketId = dayTicket.getTicketId();
+
+                List<SeatDto> associatedSeats = seatService.getAllSeatsByTicketId(ticketId);
+                for (SeatDto seat: associatedSeats){
+                    BookedDayTicketDto bookedDayTicket = BookedDayTicketDto.builder()
+                            .ticketId(ticketId)
+                            .seatId(seat.getSeatId())
+                            .schoolId(dayTicket.getSchoolId())
+                            .bookedBy(dayTicket.getBookedBy())
+                            .departurePoint(dayTicket.getDeparturePoint())
+                            .destinationPoint(dayTicket.getDestinationPoint())
+                            .morningArrivalTime(dayTicket.getMorningArrivalTime())
+                            .morningDepartTime(dayTicket.getMorningDepartTime())
+                            .noonArrivalTime(dayTicket.getNoonArrivalTime())
+                            .noonDepartTime(dayTicket.getEveningDepartTime())
+                            .eveningArrivalTime(dayTicket.getEveningArrivalTime())
+                            .eveningDepartTime(dayTicket.getNoonDepartTime())
+                            .price(dayTicket.getPrice())
+                            .assignedCar(dayTicket.getAssignedCar())
+                            .assignedDriver(dayTicket.getAssignedDriver())
+                            .ticketStatus(dayTicket.getTicketStatus())
+                            .availableSeats(dayTicket.getAvailableSeats())
+                            .build();
+
+                    bookedTicketSeats.add(bookedDayTicket);
+                }
+
+            }
+
         }catch (Exception e){
             log.error("Something bad happened: {}", e.getMessage());
         }
+        return bookedTicketSeats;
 
     }
 
     @Override
-    public boolean deleteTicket(UUID ticketId) {
+    public boolean deleteDayTicket(UUID ticketId) {
+        boolean isDeleted = false;
         try {
-            BoardingTicket ticket = boardingTicketRepository.findTicketByTicketId(ticketId).orElseThrow(() -> new EntityNotFoundException("Ticket not found with id " + ticketId));
+            Optional<AssignedDriver> driverToBeDeleted = assignedDayDriverRepo.findAssignedDriverByTicketId(ticketId);
+            if (driverToBeDeleted.isEmpty()) throw new ResourceNotFoundException("The assigned driver on ticket not found")
 
-            boardingTicketRepository.delete(ticket);
-            return !boardingTicketRepository.existsById(ticketId);
-        }catch (Exception e){
+            Optional<DayTicket> ticket = dayTicketRepo.findById(ticketId);
+            if(ticket.isEmpty()) throw new ResourceNotFoundException("ticket not found");
+
+            dayTicketRepo.delete(ticket.get());
+            return !dayTicketRepo.existsById(ticketId);
+        }catch (ResourceNotFoundException e){
+            log.error(e.getMessage());
+        } catch (Exception e){
             log.error("Something bad happened: {}", e.getMessage());
         }
 
-
+        return isDeleted;
     }
 
     @Override
-    public BoardingTicketDto getSingleTicket(UUID ticketId) {
+    public DayTicketDto getSingleDayTicket(UUID ticketId) {
+        DayTicketDto ticketDto = null;
         try {
-            BoardingTicket ticket = boardingTicketRepository.findTicketByTicketId(ticketId)
-                    .orElseThrow(() -> new EntityNotFoundException("Ticket not found with id " + ticketId));
-
-            return BoardingTicketsMapper.ticketToTicketDto(ticket);
+            Optional<DayTicket> ticket = dayTicketRepo.findById(ticketId);
+            if (ticket.isEmpty()) throw new ResourceNotFoundException("ticket not found");
+            ticketDto = DayTicketsMapper.dayTicketToDayTicketDto(ticket.get());
+        }catch (ResourceNotFoundException e){
+            log.error(e.getMessage());
         }catch (Exception e){
             log.error("Something bad happened: {}", e.getMessage());
         }
 
+        
+        return ticketDto;
     }
 
 

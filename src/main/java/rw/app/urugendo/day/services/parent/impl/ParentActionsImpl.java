@@ -2,26 +2,6 @@ package rw.app.urugendo.day.services.parent.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import rw.app.urugendo.Exceptions.ResourceNotFoundException;
-import rw.app.urugendo.models.Bus.boardingBus.dto.BusDto;
-import rw.app.urugendo.models.Ticket.Enum.ETicketStatus;
-import rw.app.urugendo.models.Ticket.boardingTicket.BoardingTicket;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.BoardingTicketDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.BookedBoardingTicketDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.CreateSeatDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.SeatDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.utils.BoardingTicketsMapper;
-import rw.app.urugendo.models.student.boardingStudent.dto.BoardingStudentDto;
-import rw.app.urugendo.models.student.boardingStudent.dto.CreateBoardingStudentDto;
-import rw.app.urugendo.repositories.tickets.boarding.BoardingTicketRepository;
-import rw.app.urugendo.services.Bus.boarding.impl.BoardingBusServiceImpl;
-import rw.app.urugendo.services.nesaReports.impl.StudentServiceImpl;
-import rw.app.urugendo.services.parent.ParentActions;
-import rw.app.urugendo.services.ticket.seatImpl.SeatServiceImpl;
-import rw.app.urugendo.services.usermanagement.impl.UserServiceImpl;
-
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -115,7 +95,7 @@ public class ParentActionsImpl implements ParentActions {
     @Override
     public List<BookedBoardingTicketDto> viewBookedTickets() throws ResourceNotFoundException {
         String bookingEmail = userService.getCurrentUser().getParent().getEmail();
-        List<SeatDto> bookedSeats = seatService.getSeatsByBooked(bookingEmail);
+        List<SeatDto> bookedSeats = seatService.g(bookingEmail);
         Set<UUID> seatsIds = bookedSeats
                 .stream()
                 .map(SeatDto::getSeatId)

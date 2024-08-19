@@ -13,7 +13,7 @@ public class CreateDayBusDto {
     @NonNull
     private int nOfSeats;
     @NonNull
-    private UUID schoolCode;
+    private UUID schoolId;
     @NonNull
     private UUID gpsId;
     @NonNull

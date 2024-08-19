@@ -1,8 +1,9 @@
 package rw.app.urugendo.day.models.Ticket.dayTIcket.utils;
 
-import rw.app.urugendo.models.Ticket.dayTIcket.Seat;
-import rw.app.urugendo.models.Ticket.dayTIcket.dto.CreateSeatDto;
-import rw.app.urugendo.models.Ticket.dayTIcket.dto.SeatDto;
+
+import rw.app.urugendo.day.models.Ticket.dayTIcket.Seat;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.CreateSeatDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.SeatDto;
 
 import java.util.List;
 

@@ -25,11 +25,6 @@ public class DayTicket extends TimeStampAudit {
     @Column(name= "school_id", nullable = false)
     private UUID schoolId;
 
-    @Column(name = "bookedBy")
-    private String bookedBy = "none";
-
-    @Column(name = "bookedTo")
-    private String bookedTo = "none";
 
     @Column(name = "departupre_point", nullable = false)
     private String departurePoint;

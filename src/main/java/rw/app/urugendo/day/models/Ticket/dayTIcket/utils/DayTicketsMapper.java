@@ -1,16 +1,15 @@
 package rw.app.urugendo.day.models.Ticket.dayTIcket.utils;
 
-import rw.app.urugendo.models.Ticket.dayTIcket.DayTicket;
-import rw.app.urugendo.models.Ticket.dayTIcket.dto.CreateDayTicketDto;
-import rw.app.urugendo.models.Ticket.dayTIcket.dto.DayTicketDto;
+
+import rw.app.urugendo.day.models.Ticket.dayTIcket.DayTicket;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.CreateDayTicketDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.DayTicketDto;
 
 public class DayTicketsMapper {
 
     public static DayTicket createDayTicketDtoToDayTicket(CreateDayTicketDto createDayTicketDto) {
         return DayTicket.builder()
                 .schoolId(createDayTicketDto.getSchoolId())
-                .bookedTo(createDayTicketDto.getBookedTo())
-                .bookedBy(createDayTicketDto.getBookedBy())
                 .departurePoint(createDayTicketDto.getDeparturePoint())
                 .destinationPoint(createDayTicketDto.getDestinationPoint())
                 .morningDepartTime(createDayTicketDto.getMorningDepartTime())
@@ -46,8 +45,6 @@ public class DayTicketsMapper {
         return DayTicket.builder()
                 .ticketId(dayTicketDto.getTicketId())
                 .schoolId(dayTicketDto.getSchoolId())
-                .bookedTo(dayTicketDto.getBookedTo())
-                .bookedBy(dayTicketDto.getBookedBy())
                 .departurePoint(dayTicketDto.getDeparturePoint())
                 .destinationPoint(dayTicketDto.getDestinationPoint())
                 .morningDepartTime(dayTicketDto.getMorningDepartTime())
@@ -67,8 +64,6 @@ public class DayTicketsMapper {
         return DayTicketDto.builder()
                 .ticketId(dayTicket.getTicketId())
                 .schoolId(dayTicket.getSchoolId())
-                .bookedTo(dayTicket.getBookedTo())
-                .bookedBy(dayTicket.getBookedBy())
                 .departurePoint(dayTicket.getDeparturePoint())
                 .destinationPoint(dayTicket.getDestinationPoint())
                 .morningDepartTime(dayTicket.getMorningDepartTime())

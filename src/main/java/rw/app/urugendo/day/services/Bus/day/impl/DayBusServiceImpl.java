@@ -65,9 +65,7 @@ public class DayBusServiceImpl implements DayBusService {
             if (!schoolBuses.isEmpty()){
                 schoolBusesDto=  schoolBuses
                         .stream()
-                        .map(
-                                DayBusMapper::dayBusToDayBusDto
-                        )
+                        .map(DayBusMapper::dayBusToDayBusDto)
                         .toList();
             }
 
@@ -120,6 +118,8 @@ public class DayBusServiceImpl implements DayBusService {
             schoolBusDto = DayBusMapper.dayBusToDayBusDto(schoolBus.get());
         }catch (ResourceNotFoundException e){
             log.error(e.getMessage());
+        }catch (Exception e){
+            log.error("Something bad happened: {}", e.getMessage());
         }
 
         return schoolBusDto;

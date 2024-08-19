@@ -1,7 +1,8 @@
 package rw.app.urugendo.day.repositories.tickets;
 
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import rw.app.urugendo.models.Ticket.boardingTicket.Seat;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.Seat;
 
 import java.util.List;
 import java.util.Optional;

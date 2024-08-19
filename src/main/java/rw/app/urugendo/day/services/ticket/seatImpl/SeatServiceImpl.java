@@ -3,14 +3,14 @@ package rw.app.urugendo.day.services.ticket.seatImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import rw.app.urugendo.models.Ticket.boardingTicket.Seat;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.BoardingTicketDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.CreateSeatDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.SeatDto;
-import rw.app.urugendo.models.Ticket.boardingTicket.utils.TicketSeatsMapper;
-import rw.app.urugendo.repositories.tickets.SeatRepostory;
-import rw.app.urugendo.services.ticket.SeatService;
-import rw.app.urugendo.services.ticket.day.impl.DayTicketServiceImpl;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.Seat;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.CreateSeatDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.DayTicketDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.SeatDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.utils.TicketSeatsMapper;
+import rw.app.urugendo.day.repositories.tickets.SeatRepostory;
+import rw.app.urugendo.day.services.ticket.SeatService;
+import rw.app.urugendo.day.services.ticket.day.impl.DayTicketServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class SeatServiceImpl implements SeatService {
     private final DayTicketServiceImpl ticketService;
     @Override
     public SeatDto registerTicketSeat(CreateSeatDto createSeatDto) {
-        BoardingTicketDto correspondingTicket = ticketService.getSingleTicket(createSeatDto.getTicketId());
+        DayTicketDto correspondingTicket = ticketService.getSingleDayTicket(createSeatDto.getTicketId());
         if(correspondingTicket ==null) throw new EntityNotFoundException("Assigned ticket "+createSeatDto.getTicketId()+" not found");
         Seat seatToBeSaved = TicketSeatsMapper.createSeatDtoToSeat(createSeatDto);
         return TicketSeatsMapper.seatToSeatDto(seatRepostory.save(seatToBeSaved));

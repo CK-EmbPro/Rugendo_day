@@ -23,7 +23,7 @@ public class BookedDayTicketDto {
     private UUID seatId;
 
     @NonNull
-    private String schoolCode;
+    private UUID schoolId;
 
     @NonNull
     private String bookedTo = "none";

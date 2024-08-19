@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
-import rw.app.urugendo.models.Ticket.Enum.ETicketStatus;
-
+import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

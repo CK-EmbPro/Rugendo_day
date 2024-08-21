@@ -1,8 +1,8 @@
 package rw.app.urugendo.day.models.schoolmanagement.day.dto;
 
 import lombok.*;
-import rw.app.urugendo.models.student.enums.EProvinces;
-import rw.app.urugendo.models.student.enums.Edistricts;
+import rw.app.urugendo.day.models.student.enums.EProvinces;
+import rw.app.urugendo.day.models.student.enums.Edistricts;
 
 @Getter
 @Setter

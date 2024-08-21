@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rw.app.urugendo.models.usermanagement.Enums.EGender;
-import rw.app.urugendo.models.usermanagement.Enums.ERoles;
+import rw.app.urugendo.day.models.usermanagement.Enums.EGender;
+import rw.app.urugendo.day.models.usermanagement.Enums.ERoles;
+
 
 @AllArgsConstructor
 @NoArgsConstructor

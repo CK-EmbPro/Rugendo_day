@@ -1,8 +1,8 @@
 package rw.app.urugendo.day.models.schoolmanagement.day.utils;
 
-import rw.app.urugendo.models.schoolmanagement.day.DaySchool;
-import rw.app.urugendo.models.schoolmanagement.day.dto.CreateDaySchoolDto;
-import rw.app.urugendo.models.schoolmanagement.day.dto.DaySchoolDto;
+import rw.app.urugendo.day.models.schoolmanagement.day.DaySchool;
+import rw.app.urugendo.day.models.schoolmanagement.day.dto.CreateDaySchoolDto;
+import rw.app.urugendo.day.models.schoolmanagement.day.dto.DaySchoolDto;
 
 public class DaySchoolMapper {
     public static DaySchoolDto daySchoolToDaySchoolDto(DaySchool daySchool) {

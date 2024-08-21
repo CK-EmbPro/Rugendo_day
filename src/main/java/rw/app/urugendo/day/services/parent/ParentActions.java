@@ -1,12 +1,13 @@
 package rw.app.urugendo.day.services.parent;
 
-import rw.app.urugendo.Exceptions.ResourceNotFoundException;
-import rw.app.urugendo.models.Ticket.boardingTicket.dto.BookedBoardingTicketDto;
+import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookedDayTicketDto;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookingDayTicketDto;
 
 import java.util.List;
 
 public interface ParentActions {
-    BookedBoardingTicketDto bookStudentTicket(BookedBoardingTicketDto ticketDto) throws ResourceNotFoundException;
-    List<BookedBoardingTicketDto> viewBookedTickets() throws ResourceNotFoundException;
+    BookedDayTicketDto bookStudentTicket(BookingDayTicketDto ticketDto) throws ResourceNotFoundException;
+    List<BookedDayTicketDto> viewBookedTickets() throws ResourceNotFoundException;
 
 }

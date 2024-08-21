@@ -13,7 +13,7 @@ public interface SeatService {
     List<SeatDto> getAllSeatsByTicketId(UUID ticketId);
     List<SeatDto> getAllSeats();
     SeatDto getSingleSeat(UUID seatId);
-    List<SeatDto> getSeatsByBooked(String bookedBy);
+    List<SeatDto> getSeatsByBookedBy(String bookedBy);
     SeatDto getSeatByTicketId(UUID seatId, UUID ticketId);
     boolean deleteTicketSeat(UUID seatId);
     boolean deleteAllTicketSeats(UUID ticketId);

@@ -2,6 +2,22 @@ package rw.app.urugendo.day.services.parent.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.Bus.dayBus.dto.DayBusDto;
+import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.DayTicket;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.*;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.utils.DayTicketsMapper;
+import rw.app.urugendo.day.models.student.dayStudent.dto.DayStudentDto;
+import rw.app.urugendo.day.repositories.tickets.day.DayTicketRepo;
+import rw.app.urugendo.day.services.Bus.day.impl.DayBusServiceImpl;
+import rw.app.urugendo.day.services.parent.ParentActions;
+import rw.app.urugendo.day.services.student.DayStudentService;
+import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
+import rw.app.urugendo.day.services.usermanagement.impl.UserServiceImpl;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -10,82 +26,66 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ParentActionsImpl implements ParentActions {
 
-    private final BoardingTicketRepository boardingTicketRepository;
-    private final StudentServiceImpl studentService;
-    private final BoardingBusServiceImpl busService;
+    private final DayTicketRepo dayTicketRepo;
+    private final DayBusServiceImpl busService;
     private final SeatServiceImpl seatService;
     private final UserServiceImpl userService;
+    private final DayStudentService studentService;
 
     @Override
 
-    public synchronized BookedBoardingTicketDto bookStudentTicket(BookedBoardingTicketDto toBebookedBoardingTicketDto) throws ResourceNotFoundException {
+    public synchronized BookedDayTicketDto bookStudentTicket(BookingDayTicketDto toBeBookedTicket) throws ResourceNotFoundException {
         String bookingEmail = userService.getCurrentUser().getParent().getEmail();
-        BoardingTicket ticketToBeBooked = boardingTicketRepository.findTicketByTicketId(toBebookedBoardingTicketDto.getTicketId())
-                .orElseThrow(() -> new EntityNotFoundException("Sorry you can't book the ticket " + toBebookedBoardingTicketDto.getTicketId() + " because is not available"));
+        Optional<DayTicket> ticketToBeBooked = dayTicketRepo.findById(toBeBookedTicket.getTicketId());
+        if (ticketToBeBooked.isEmpty())
+            throw new ResourceNotFoundException("Sorry you can't book the ticket " + toBeBookedTicket.getTicketId() + " because is not available");
 
-        BusDto associatedCar = busService.getBusByPlateNo(ticketToBeBooked.getAssignedCar());
-        List<SeatDto> bookedSeats = seatService.getAllSeatsByTicketId(ticketToBeBooked.getTicketId());
+        DayBusDto associatedCar = busService.getDayBusByPlateNo(ticketToBeBooked.get().getAssignedCar());
+        List<SeatDto> bookedSeats = seatService.getAllSeatsByTicketId(ticketToBeBooked.get().getTicketId());
 
 //        Main booking logic
-        if (ticketToBeBooked.getTicketStatus() == ETicketStatus.BOOKED || bookedSeats.size() >= associatedCar.getNOfSeats() || ticketToBeBooked.getAvailableSeats() <= 0) {
+        if (ticketToBeBooked.get().getTicketStatus() == ETicketStatus.BOOKED || bookedSeats.size() >= associatedCar.getNOfSeats() || ticketToBeBooked.get().getAvailableSeats() <= 0) {
             throw new Error("Ticket is booked already");
         }
 
         String seatIdentifier = "Seat_" + (bookedSeats.size() + 1);
         CreateSeatDto seatToBeBooked = CreateSeatDto.builder()
-                .ticketId(ticketToBeBooked.getTicketId())
+                .ticketId(ticketToBeBooked.get().getTicketId())
                 .seatIdentifier(seatIdentifier)
                 .bookedBy(bookingEmail)
+                .bookedTo(toBeBookedTicket.getBookedTo())
                 .build();
 
         SeatDto bookedSeat = seatService.registerTicketSeat(seatToBeBooked);
 
         if (bookedSeats.size() + 1 == associatedCar.getNOfSeats()) {
-            ticketToBeBooked.setTicketStatus(ETicketStatus.BOOKED);
+            ticketToBeBooked.get().setTicketStatus(ETicketStatus.BOOKED);
         }
 
-        ticketToBeBooked.setAvailableSeats(ticketToBeBooked.getAvailableSeats() - 1);
+        ticketToBeBooked.get().setAvailableSeats(ticketToBeBooked.get().getAvailableSeats() - 1);
 //      Main booking logic
-        CreateBoardingStudentDto studentToBeCreated = CreateBoardingStudentDto.builder()
-                .ticketId(toBebookedBoardingTicketDto.getTicketId())
+        DayTicket alreadyBooked = dayTicketRepo.save(ticketToBeBooked.get());
+
+        BookedDayTicketDto bookedTicket = BookedDayTicketDto.builder()
+                .ticketId(alreadyBooked.getTicketId())
                 .seatId(bookedSeat.getSeatId())
-                .firstName(toBebookedBoardingTicketDto.getFirstName())
-                .lastName(toBebookedBoardingTicketDto.getLastName())
-                .schoolName(toBebookedBoardingTicketDto.getSchoolName())
-                .schoolCode(toBebookedBoardingTicketDto.getSchoolCode())
-                .educationType(toBebookedBoardingTicketDto.getStuEductionType())
-                .schoolDistrict(toBebookedBoardingTicketDto.getSchoolDistrictName())
-                .rebCombination(toBebookedBoardingTicketDto.getRebCombination())
-                .tvetTrade(toBebookedBoardingTicketDto.getTvetTrade())
-                .rebClass(toBebookedBoardingTicketDto.getRebClass())
-                .tvetLevel(toBebookedBoardingTicketDto.getTvetLevel())
-                .studentLevel(toBebookedBoardingTicketDto.getStudentLevel())
-                .departurePoint(toBebookedBoardingTicketDto.getDeparture_point())
-                .destinationPoint(toBebookedBoardingTicketDto.getDestination_point())
-                .departTime(toBebookedBoardingTicketDto.getDepart_time())
-                .arrivalTime(toBebookedBoardingTicketDto.getArrival_time())
+                .schoolId(alreadyBooked.getSchoolId())
+                .bookedTo(bookedSeat.getBookedTo())
+                .bookedBy(bookingEmail)
+                .departurePoint(alreadyBooked.getDeparturePoint())
+                .destinationPoint(alreadyBooked.getDestinationPoint())
+                .morningArrivalTime(alreadyBooked.getMorningArrivalTime())
+                .morningDepartTime(alreadyBooked.getMorningDepartTime())
+                .noonArrivalTime(alreadyBooked.getNoonArrivalTime())
+                .noonDepartTime(alreadyBooked.getNoonDepartTime())
+                .eveningArrivalTime(alreadyBooked.getEveningArrivalTime())
+                .eveningDepartTime(alreadyBooked.getEveningDepartTime())
+                .price(alreadyBooked.getPrice())
+                .assignedCar(alreadyBooked.getAssignedCar())
+                .assignedDriver(alreadyBooked.getAssignedDriver())
+                .ticketStatus(alreadyBooked.getTicketStatus())
+                .availableSeats(alreadyBooked.getAvailableSeats())
                 .build();
-
-
-        BookedBoardingTicketDto bookedTicket = BoardingTicketsMapper.ticketToBookedTickedDto(boardingTicketRepository.save(ticketToBeBooked));
-
-        BoardingStudentDto savedStudent = null;
-        if (bookedTicket != null) {
-            savedStudent = studentService.registerStudent(studentToBeCreated);
-        }
-        bookedTicket.setStudentId(savedStudent.getStudentId());
-        bookedTicket.setBookedBy(bookingEmail);
-        bookedTicket.setFirstName(savedStudent.getFirstName());
-        bookedTicket.setLastName(savedStudent.getLastName());
-        bookedTicket.setSchoolName(savedStudent.getSchoolName());
-        bookedTicket.setSchoolCode(savedStudent.getSchoolCode());
-        bookedTicket.setStuEductionType(savedStudent.getEducationType());
-        bookedTicket.setSchoolDistrictName(savedStudent.getSchoolDistrict());
-        bookedTicket.setRebCombination(savedStudent.getRebCombination());
-        bookedTicket.setTvetTrade(savedStudent.getTvetTrade());
-        bookedTicket.setRebClass(savedStudent.getRebClass());
-        bookedTicket.setTvetLevel(savedStudent.getTvetLevel());
-        bookedTicket.setStudentLevel(savedStudent.getStudentLevel());
 
         return bookedTicket;
 
@@ -93,78 +93,62 @@ public class ParentActionsImpl implements ParentActions {
     }
 
     @Override
-    public List<BookedBoardingTicketDto> viewBookedTickets() throws ResourceNotFoundException {
+    public List<BookedDayTicketDto> viewBookedTickets() throws ResourceNotFoundException {
         String bookingEmail = userService.getCurrentUser().getParent().getEmail();
-        List<SeatDto> bookedSeats = seatService.g(bookingEmail);
-        Set<UUID> seatsIds = bookedSeats
-                .stream()
-                .map(SeatDto::getSeatId)
-                .collect(Collectors.toSet());
+//        Getting seatsIds
+        List<SeatDto> bookedSeats = seatService.getSeatsByBookedBy(bookingEmail);
 
+        Set<UUID> seatsBookedTo = bookedSeats
+                .stream()
+                .map(SeatDto::getBookedTo)
+                .collect(Collectors.toSet());
+//Getting ticketIds
         Set<UUID> ticketIds = bookedSeats
                 .stream()
                 .map(SeatDto::getTicketId)
                 .collect(Collectors.toSet());
 
-        Set<BoardingTicket> bookedSeatsTickets = boardingTicketRepository.findTicketByTicketId(ticketIds);
-
-        Set<BoardingTicketDto> bookedSeatsTicketsDto = bookedSeatsTickets
+//        Getting tickets booked
+        Set<DayTicket> bookedSeatsTickets = dayTicketRepo.findDayTicketsByTicketId(ticketIds);
+//        Getting ticketsDtos booked
+        Set<DayTicketDto> bookedSeatsTicketsDto = bookedSeatsTickets
                 .stream()
-                .map(BoardingTicketsMapper::ticketToTicketDto)
+                .map(DayTicketsMapper::dayTicketToDayTicketDto)
                 .collect(Collectors.toSet());
 
-        List<BoardingStudentDto> studentsWithTicket = null;
+        List<BookedDayTicketDto> bookedTickets = null;
+        for (DayTicketDto bookedTicket : bookedSeatsTicketsDto) {
+            List<SeatDto> seats = seatService.getAllSeatsByTicketId(bookedTicket.getTicketId());
+            BookedDayTicketDto bookedDayTicketDto=BookedDayTicketDto.builder()
+                    .ticketId(bookedTicket.getTicketId())
+                    .schoolId(bookedTicket.getSchoolId())
+                    .bookedBy(bookingEmail)
+                    .departurePoint(bookedTicket.getDeparturePoint())
+                    .destinationPoint(bookedTicket.getDestinationPoint())
+                    .morningArrivalTime(bookedTicket.getMorningArrivalTime())
+                    .morningDepartTime(bookedTicket.getMorningDepartTime())
+                    .noonArrivalTime(bookedTicket.getNoonArrivalTime())
+                    .noonDepartTime(bookedTicket.getNoonDepartTime())
+                    .eveningArrivalTime(bookedTicket.getEveningArrivalTime())
+                    .eveningDepartTime(bookedTicket.getEveningDepartTime())
+                    .price(bookedTicket.getPrice())
+                    .assignedCar(bookedTicket.getAssignedCar())
+                    .assignedDriver(bookedTicket.getAssignedDriver())
+                    .ticketStatus(bookedTicket.getTicketStatus())
+                    .availableSeats(bookedTicket.getAvailableSeats())
+                    .build();
+            for (SeatDto seat : seats){
+                DayStudentDto student = null;
 
-        for (UUID ticket_id : ticketIds) {
-            for (UUID seat_id : seatsIds) {
-                if (studentService.getStuByTicketAndSeatId(ticket_id, seat_id) != null) {
-                    studentsWithTicket.add(studentService.getStuByTicketAndSeatId(ticket_id, seat_id));
+                if (studentService.getStudentById(seat.getBookedTo()) != null) {
+                    student = studentService.getStudentById(seat.getBookedTo());
                 }
-
+                bookedDayTicketDto.setSeatId(seat.getSeatId());
+                bookedDayTicketDto.setBookedTo(student.getStudentId());
+                bookedTickets.add(bookedDayTicketDto);
             }
         }
 
-
-        List<BookedBoardingTicketDto> bookedTickets = null;
-        for (BoardingTicketDto bookedTicket : bookedSeatsTicketsDto) {
-            bookedTickets.add(
-                    BookedBoardingTicketDto.builder()
-                            .ticketId(bookedTicket.getTicketId())
-                            .companyId(bookedTicket.getCompanyId())
-                            .departure_point(bookedTicket.getDeparture_point())
-                            .destination_point(bookedTicket.getDestination_point())
-                            .depart_time(bookedTicket.getDepart_time())
-                            .arrival_time(bookedTicket.getArrival_time())
-                            .duration(bookedTicket.getDuration())
-                            .availableSeats(bookedTicket.getAvailableSeats())
-                            .price(bookedTicket.getPrice())
-                            .assgnedCar(bookedTicket.getAssgnedCar())
-                            .assignedDriver(bookedTicket.getAssignedDriver())
-                            .status(bookedTicket.getStatus())
-                            .build()
-            );
-        }
-
-
-        for (BoardingStudentDto studentwithTicket : studentsWithTicket) {
-            for (BookedBoardingTicketDto bookedBoardingTicketDto : bookedTickets) {
-                if (studentwithTicket.getTicketId() == bookedBoardingTicketDto.getTicketId()) {
-                    bookedBoardingTicketDto.setStudentId(studentwithTicket.getStudentId());
-                    bookedBoardingTicketDto.setBookedBy(bookingEmail);
-                    bookedBoardingTicketDto.setFirstName(studentwithTicket.getFirstName());
-                    bookedBoardingTicketDto.setLastName(studentwithTicket.getLastName());
-                    bookedBoardingTicketDto.setSchoolName(studentwithTicket.getSchoolName());
-                    bookedBoardingTicketDto.setSchoolCode(studentwithTicket.getSchoolCode());
-                    bookedBoardingTicketDto.setStuEductionType(studentwithTicket.getEducationType());
-                    bookedBoardingTicketDto.setSchoolDistrictName(studentwithTicket.getSchoolDistrict());
-                    bookedBoardingTicketDto.setRebCombination(studentwithTicket.getRebCombination());
-                    bookedBoardingTicketDto.setTvetTrade(studentwithTicket.getTvetTrade());
-                    bookedBoardingTicketDto.setRebClass(studentwithTicket.getRebClass());
-                    bookedBoardingTicketDto.setTvetLevel(studentwithTicket.getTvetLevel());
-                    bookedBoardingTicketDto.setStudentLevel(studentwithTicket.getStudentLevel());
-                }
-            }
-        }
 
         return bookedTickets;
 //

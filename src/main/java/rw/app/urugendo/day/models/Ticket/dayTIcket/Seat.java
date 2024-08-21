@@ -27,7 +27,7 @@ public class Seat {
     @Column(name = "bookedBy")
     private String bookedBy;
 
-//    @Column(name = "bookedTo")
-//    private String bookedTo = "none";
+    @Column(name = "bookedTo")
+    private UUID bookedTo;
 
 }

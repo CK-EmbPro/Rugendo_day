@@ -1,9 +1,9 @@
 package rw.app.urugendo.day.models.student.dayStudent.utils;
 
 
-import rw.app.urugendo.models.student.dayStudent.DayStudent;
-import rw.app.urugendo.models.student.dayStudent.dto.CreateDayStudentDto;
-import rw.app.urugendo.models.student.dayStudent.dto.DayStudentDto;
+import rw.app.urugendo.day.models.student.dayStudent.DayStudent;
+import rw.app.urugendo.day.models.student.dayStudent.dto.CreateDayStudentDto;
+import rw.app.urugendo.day.models.student.dayStudent.dto.DayStudentDto;
 
 import java.util.List;
 
@@ -27,13 +27,13 @@ public class DayStudentMapper {
                 .father_phono(dayStudentDto.getFather_phono())
                 .mother_phono(dayStudentDto.getMother_phono())
                 .schoolName(dayStudentDto.getSchoolName())
-                .schoolCode(dayStudentDto.getSchoolCode())
                 .stuProvince(dayStudentDto.getStuProvince())
                 .stuDistrict(dayStudentDto.getStuDistrict())
                 .stuSector(dayStudentDto.getStuSector())
                 .stuCell(dayStudentDto.getStuCell())
                 .stuVillage(dayStudentDto.getStuVillage())
                 .streetInfo(dayStudentDto.getStreetInfo())
+                .stuGender(dayStudentDto.getStuGender())
                 .build();
     }
 
@@ -57,13 +57,13 @@ public class DayStudentMapper {
                 .father_phono(dayStudent.getFather_phono())
                 .mother_phono(dayStudent.getMother_phono())
                 .schoolName(dayStudent.getSchoolName())
-                .schoolCode(dayStudent.getSchoolCode())
                 .stuProvince(dayStudent.getStuProvince())
                 .stuDistrict(dayStudent.getStuDistrict())
                 .stuSector(dayStudent.getStuSector())
                 .stuCell(dayStudent.getStuCell())
                 .stuVillage(dayStudent.getStuVillage())
                 .streetInfo(dayStudent.getStreetInfo())
+                .stuGender(dayStudent.getStuGender())
                 .build();
     }
     public static DayStudent createDayStudentDtotoToDayStudent(CreateDayStudentDto createDayStudentDto) {
@@ -77,13 +77,13 @@ public class DayStudentMapper {
                 .father_phono(createDayStudentDto.getFather_phono())
                 .mother_phono(createDayStudentDto.getMother_phono())
                 .schoolName(createDayStudentDto.getSchoolName())
-                .schoolCode(createDayStudentDto.getSchoolCode())
                 .stuProvince(createDayStudentDto.getStuProvince())
                 .stuDistrict(createDayStudentDto.getStuDistrict())
                 .stuSector(createDayStudentDto.getStuSector())
                 .stuCell(createDayStudentDto.getStuCell())
                 .stuVillage(createDayStudentDto.getStuVillage())
                 .streetInfo(createDayStudentDto.getStreetInfo())
+                .stuGender(createDayStudentDto.getStuGender())
                 .build();
     }
 }

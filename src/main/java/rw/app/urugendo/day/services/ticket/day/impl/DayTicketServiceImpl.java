@@ -1,6 +1,5 @@
 package rw.app.urugendo.day.services.ticket.day.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.utils.Assigned
 import rw.app.urugendo.day.models.Driver.dayDriver.registeredDriver.dto.RegisteredDriverDto;
 import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.DayTicket;
-import rw.app.urugendo.day.models.Ticket.dayTIcket.Seat;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookedDayTicketDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.CreateDayTicketDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.DayTicketDto;
@@ -24,7 +22,6 @@ import rw.app.urugendo.day.services.Bus.day.impl.DayBusServiceImpl;
 import rw.app.urugendo.day.services.Driver.day.impl.DayDriverServiceImpl;
 import rw.app.urugendo.day.services.ticket.day.DayTicketService;
 import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -192,7 +189,7 @@ public class DayTicketServiceImpl implements DayTicketService {
         boolean isDeleted = false;
         try {
             Optional<AssignedDriver> driverToBeDeleted = assignedDayDriverRepo.findAssignedDriverByTicketId(ticketId);
-            if (driverToBeDeleted.isEmpty()) throw new ResourceNotFoundException("The assigned driver on ticket not found")
+            if (driverToBeDeleted.isEmpty()) throw new ResourceNotFoundException("The assigned driver on ticket not found");
 
             Optional<DayTicket> ticket = dayTicketRepo.findById(ticketId);
             if(ticket.isEmpty()) throw new ResourceNotFoundException("ticket not found");

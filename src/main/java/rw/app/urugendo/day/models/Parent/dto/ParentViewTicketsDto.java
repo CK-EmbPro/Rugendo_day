@@ -1,7 +1,7 @@
 package rw.app.urugendo.day.models.Parent.dto;
 
 import lombok.*;
-import rw.app.urugendo.models.Ticket.Enum.ETicketValidStatus;
+import rw.app.urugendo.day.models.Ticket.Enum.ETicketValidStatus;
 
 @Setter
 @Getter

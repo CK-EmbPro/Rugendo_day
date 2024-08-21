@@ -19,11 +19,6 @@ public class CreateDayTicketDto {
     @NonNull
     private UUID schoolId;
 
-    @NonNull
-    private String bookedTo = "none";
-
-    @NonNull
-    private String bookedBy = "none";
 
     @NonNull
     private String departurePoint;

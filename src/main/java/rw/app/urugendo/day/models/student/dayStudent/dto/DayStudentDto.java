@@ -1,8 +1,9 @@
 package rw.app.urugendo.day.models.student.dayStudent.dto;
 
 import lombok.*;
-import rw.app.urugendo.models.student.enums.EProvinces;
-import rw.app.urugendo.models.student.enums.Edistricts;
+import rw.app.urugendo.day.models.student.enums.EProvinces;
+import rw.app.urugendo.day.models.student.enums.Edistricts;
+import rw.app.urugendo.day.models.usermanagement.Enums.EGender;
 
 import java.util.UUID;
 
@@ -25,6 +26,9 @@ public class DayStudentDto {
     private String lastName;
 
     @NonNull
+    private EGender stuGender;
+
+    @NonNull
     private String father_firstName;
 
     @NonNull
@@ -44,9 +48,6 @@ public class DayStudentDto {
 
     @NonNull
     private String schoolName;
-
-    @NonNull
-    private String schoolCode;
 
     @NonNull
     private EProvinces stuProvince;

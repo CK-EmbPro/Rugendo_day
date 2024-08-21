@@ -12,4 +12,5 @@ public class CreateSeatDto {
     private UUID ticketId;
     private String seatIdentifier;
     private String bookedBy;
+    private UUID bookedTo;
 }

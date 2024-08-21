@@ -64,7 +64,7 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public List<SeatDto> getSeatsByBooked(String bookedBy) {
+    public List<SeatDto> getSeatsByBookedBy(String bookedBy) {
         List<Seat> seatsByBookedBy = seatRepostory.findByBookedBy(bookedBy);
         return TicketSeatsMapper.seatsListToSeatDtosList(seatsByBookedBy);
     }

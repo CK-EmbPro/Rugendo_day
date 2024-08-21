@@ -8,7 +8,6 @@ import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.dto.CreateAssi
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class AssignedDriverMapper {
     public static AssignedDriver createAssignedDriverToAssignedDriver(CreateAssignedDriverDto createAssignedDriverDto){

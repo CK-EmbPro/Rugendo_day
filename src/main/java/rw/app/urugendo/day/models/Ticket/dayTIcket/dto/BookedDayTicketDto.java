@@ -26,10 +26,10 @@ public class BookedDayTicketDto {
     private UUID schoolId;
 
     @NonNull
-    private String bookedTo = "none";
+    private UUID bookedTo;
 
     @NonNull
-    private String bookedBy = "none";
+    private String bookedBy;
 
     @NonNull
     private String departurePoint;

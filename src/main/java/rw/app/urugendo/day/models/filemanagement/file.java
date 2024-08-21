@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rw.app.urugendo.models.filemanagement.Enums.EFileSizeType;
-import rw.app.urugendo.models.filemanagement.Enums.EFileStatus;
+import rw.app.urugendo.day.models.filemanagement.Enums.EFileSizeType;
+import rw.app.urugendo.day.models.filemanagement.Enums.EFileStatus;
+
 
 import java.util.UUID;
 

@@ -3,13 +3,13 @@ package rw.app.urugendo.day.services.student.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import rw.app.urugendo.Exceptions.ResourceNotFoundException;
-import rw.app.urugendo.models.student.dayStudent.DayStudent;
-import rw.app.urugendo.models.student.dayStudent.dto.CreateDayStudentDto;
-import rw.app.urugendo.models.student.dayStudent.dto.DayStudentDto;
-import rw.app.urugendo.models.student.dayStudent.utils.DayStudentMapper;
-import rw.app.urugendo.repositories.student.day.DayStudentRepo;
-import rw.app.urugendo.services.student.DayStudentService;
+import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.student.dayStudent.DayStudent;
+import rw.app.urugendo.day.models.student.dayStudent.dto.CreateDayStudentDto;
+import rw.app.urugendo.day.models.student.dayStudent.dto.DayStudentDto;
+import rw.app.urugendo.day.models.student.dayStudent.utils.DayStudentMapper;
+import rw.app.urugendo.day.repositories.student.day.DayStudentRepo;
+import rw.app.urugendo.day.services.student.DayStudentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,6 @@ public class DayStudentServiceImpl implements DayStudentService {
             toBeUpdated.get().setMother_phono(dayStudentDto.getMother_phono());
             toBeUpdated.get().setFather_phono(dayStudentDto.getFather_phono());
             toBeUpdated.get().setSchoolName(dayStudentDto.getSchoolName());
-            toBeUpdated.get().setSchoolCode(dayStudentDto.getSchoolCode());
             toBeUpdated.get().setStuProvince(dayStudentDto.getStuProvince());
             toBeUpdated.get().setStuDistrict(dayStudentDto.getStuDistrict());
             toBeUpdated.get().setStuSector(dayStudentDto.getStuSector());
@@ -87,17 +86,17 @@ public class DayStudentServiceImpl implements DayStudentService {
         return studentDto;
     }
 
-    @Override
-    public List<DayStudentDto> getStudentsBySchoolCode(String schoolCode) {
-        List<DayStudentDto> studentDtos = null;
-        try {
-            List<DayStudent> students = studentRepo.findDayStudentsBySchoolCode(schoolCode);
-            studentDtos = DayStudentMapper.dayStudentListToDayStudentDtoList(students);
-        } catch (Exception e) {
-            log.error("Something bad happened: {}",e.getMessage());
-        }
-        return studentDtos;
-    }
+//    @Override
+//    public List<DayStudentDto> getStudentsBySchoolCode(String schoolCode) {
+//        List<DayStudentDto> studentDtos = null;
+//        try {
+//            List<DayStudent> students = studentRepo.findDayStudentsBySchoolCode(schoolCode);
+//            studentDtos = DayStudentMapper.dayStudentListToDayStudentDtoList(students);
+//        } catch (Exception e) {
+//            log.error("Something bad happened: {}",e.getMessage());
+//        }
+//        return studentDtos;
+//    }
 
     @Override
     public List<DayStudentDto> getStudentsBySchoolId(UUID schoolId) {

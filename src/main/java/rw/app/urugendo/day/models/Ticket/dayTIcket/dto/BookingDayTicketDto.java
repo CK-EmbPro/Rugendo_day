@@ -5,22 +5,28 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
 import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DayTicketDto {
+public class BookingDayTicketDto {
 
     @NonNull
     private UUID ticketId;
 
     @NonNull
     private UUID schoolId;
+
+    @NonNull
+    private UUID bookedTo;
+
+    @NonNull
+    private String bookedBy;
 
     @NonNull
     private String departurePoint;

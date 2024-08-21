@@ -13,4 +13,5 @@ public class SeatDto {
     private UUID ticketId;
     private String seatIdentifier;
     private String bookedBy;
+    private UUID bookedTo;
 }

@@ -3,9 +3,10 @@ package rw.app.urugendo.day.models.student.dayStudent;
 
 import jakarta.persistence.*;
 import lombok.*;
-import rw.app.urugendo.models.student.enums.EProvinces;
-import rw.app.urugendo.models.student.enums.Edistricts;
-import rw.app.urugendo.models.utils.TimeStampAudit;
+import rw.app.urugendo.day.models.student.enums.EProvinces;
+import rw.app.urugendo.day.models.student.enums.Edistricts;
+import rw.app.urugendo.day.models.usermanagement.Enums.EGender;
+import rw.app.urugendo.day.models.utils.TimeStampAudit;
 
 import java.util.UUID;
 
@@ -52,8 +53,8 @@ public class DayStudent extends TimeStampAudit {
     @Column(name = "school_name", nullable = false)
     private String schoolName;
 
-    @Column(name = "school_code", nullable = false)
-    private String schoolCode;
+    @Column(name = "stu_gender", nullable = false)
+    private EGender stuGender;
 
     @Column(name = "stu_province", nullable = false)
     private EProvinces stuProvince;

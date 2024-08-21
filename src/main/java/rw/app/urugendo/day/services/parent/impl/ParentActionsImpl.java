@@ -16,10 +16,8 @@ import rw.app.urugendo.day.services.parent.ParentActions;
 import rw.app.urugendo.day.services.student.DayStudentService;
 import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
 import rw.app.urugendo.day.services.usermanagement.impl.UserServiceImpl;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,62 +93,52 @@ public class ParentActionsImpl implements ParentActions {
     @Override
     public List<BookedDayTicketDto> viewBookedTickets() throws ResourceNotFoundException {
         String bookingEmail = userService.getCurrentUser().getParent().getEmail();
-//        Getting seatsIds
         List<SeatDto> bookedSeats = seatService.getSeatsByBookedBy(bookingEmail);
 
-        Set<UUID> seatsBookedTo = bookedSeats
-                .stream()
+        Set<UUID> seatsBookedTo = bookedSeats.stream()
                 .map(SeatDto::getBookedTo)
                 .collect(Collectors.toSet());
-//Getting ticketIds
-        Set<UUID> ticketIds = bookedSeats
-                .stream()
+
+        Set<UUID> ticketIds = bookedSeats.stream()
                 .map(SeatDto::getTicketId)
                 .collect(Collectors.toSet());
 
-//        Getting tickets booked
         Set<DayTicket> bookedSeatsTickets = dayTicketRepo.findDayTicketsByTicketId(ticketIds);
-//        Getting ticketsDtos booked
-        Set<DayTicketDto> bookedSeatsTicketsDto = bookedSeatsTickets
-                .stream()
-                .map(DayTicketsMapper::dayTicketToDayTicketDto)
-                .collect(Collectors.toSet());
 
-        List<BookedDayTicketDto> bookedTickets = null;
-        for (DayTicketDto bookedTicket : bookedSeatsTicketsDto) {
+        List<BookedDayTicketDto> bookedTickets = new ArrayList<>();
+        for (DayTicket bookedTicket : bookedSeatsTickets) {
             List<SeatDto> seats = seatService.getAllSeatsByTicketId(bookedTicket.getTicketId());
-            BookedDayTicketDto bookedDayTicketDto=BookedDayTicketDto.builder()
-                    .ticketId(bookedTicket.getTicketId())
-                    .schoolId(bookedTicket.getSchoolId())
-                    .bookedBy(bookingEmail)
-                    .departurePoint(bookedTicket.getDeparturePoint())
-                    .destinationPoint(bookedTicket.getDestinationPoint())
-                    .morningArrivalTime(bookedTicket.getMorningArrivalTime())
-                    .morningDepartTime(bookedTicket.getMorningDepartTime())
-                    .noonArrivalTime(bookedTicket.getNoonArrivalTime())
-                    .noonDepartTime(bookedTicket.getNoonDepartTime())
-                    .eveningArrivalTime(bookedTicket.getEveningArrivalTime())
-                    .eveningDepartTime(bookedTicket.getEveningDepartTime())
-                    .price(bookedTicket.getPrice())
-                    .assignedCar(bookedTicket.getAssignedCar())
-                    .assignedDriver(bookedTicket.getAssignedDriver())
-                    .ticketStatus(bookedTicket.getTicketStatus())
-                    .availableSeats(bookedTicket.getAvailableSeats())
-                    .build();
-            for (SeatDto seat : seats){
-                DayStudentDto student = null;
 
-                if (studentService.getStudentById(seat.getBookedTo()) != null) {
-                    student = studentService.getStudentById(seat.getBookedTo());
-                }
-                bookedDayTicketDto.setSeatId(seat.getSeatId());
-                bookedDayTicketDto.setBookedTo(student.getStudentId());
+            for (SeatDto seat : seats) {
+                DayStudentDto student = studentService.getStudentById(seat.getBookedTo());
+                if (student == null) continue;
+
+                BookedDayTicketDto bookedDayTicketDto = BookedDayTicketDto.builder()
+                        .ticketId(bookedTicket.getTicketId())
+                        .schoolId(bookedTicket.getSchoolId())
+                        .bookedBy(bookingEmail)
+                        .departurePoint(bookedTicket.getDeparturePoint())
+                        .destinationPoint(bookedTicket.getDestinationPoint())
+                        .morningArrivalTime(bookedTicket.getMorningArrivalTime())
+                        .morningDepartTime(bookedTicket.getMorningDepartTime())
+                        .noonArrivalTime(bookedTicket.getNoonArrivalTime())
+                        .noonDepartTime(bookedTicket.getNoonDepartTime())
+                        .eveningArrivalTime(bookedTicket.getEveningArrivalTime())
+                        .eveningDepartTime(bookedTicket.getEveningDepartTime())
+                        .price(bookedTicket.getPrice())
+                        .assignedCar(bookedTicket.getAssignedCar())
+                        .assignedDriver(bookedTicket.getAssignedDriver())
+                        .ticketStatus(bookedTicket.getTicketStatus())
+                        .availableSeats(bookedTicket.getAvailableSeats())
+                        .seatId(seat.getSeatId())
+                        .bookedTo(student.getStudentId())
+                        .build();
+
                 bookedTickets.add(bookedDayTicketDto);
             }
         }
 
-
         return bookedTickets;
-//
     }
+
 }

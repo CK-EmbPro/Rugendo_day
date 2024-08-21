@@ -3,14 +3,16 @@ package rw.app.urugendo.day.services.schoolmanagement.day.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import rw.app.urugendo.Exceptions.ResourceNotFoundException;
-import rw.app.urugendo.models.schoolmanagement.day.DaySchool;
-import rw.app.urugendo.models.schoolmanagement.day.dto.CreateDaySchoolDto;
-import rw.app.urugendo.models.schoolmanagement.day.dto.DaySchoolDto;
-import rw.app.urugendo.models.schoolmanagement.day.utils.DaySchoolMapper;
-import rw.app.urugendo.repositories.schoolmanagement.day.DaySchoolRepo;
-import rw.app.urugendo.services.schoolmanagement.day.DaySchoolService;
+import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.schoolmanagement.day.DaySchool;
+import rw.app.urugendo.day.models.schoolmanagement.day.dto.CreateDaySchoolDto;
+import rw.app.urugendo.day.models.schoolmanagement.day.dto.DaySchoolDto;
+import rw.app.urugendo.day.models.schoolmanagement.day.utils.DaySchoolMapper;
+import rw.app.urugendo.day.repositories.schoolmanagement.day.DaySchoolRepo;
+import rw.app.urugendo.day.services.schoolmanagement.day.DaySchoolService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,6 +75,22 @@ public class DaySchoolServiceImpl implements DaySchoolService {
             log.error("Something bad happened: {}", e.getMessage());
         }
         return schoolDto;
+    }
+
+    @Override
+    public List<DaySchoolDto> getAllSchools() {
+        List<DaySchoolDto> schoolDtos = new ArrayList<>();
+        try {
+            List<DaySchool> schools = schoolRepo.findAll();
+            schoolDtos = schools
+                    .stream()
+                    .map(DaySchoolMapper::daySchoolToDaySchoolDto)
+                    .toList();
+        }catch (Exception e){
+            log.error("Something bad happened: {}", e.getMessage());
+        }
+
+        return schoolDtos;
     }
 
     @Override

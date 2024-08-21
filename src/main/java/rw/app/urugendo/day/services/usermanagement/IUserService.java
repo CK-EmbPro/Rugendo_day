@@ -11,5 +11,5 @@ public interface IUserService {
     LogInDetailsDTO registerUser(UserRegistrationDTO registrationDTO) throws CustomExceptionHandler;
     LogInDetailsDTO login(LoginDTO loginDTO) throws ResourceNotFoundException;
     LogInDetailsDTO getCurrentUser() throws ResourceNotFoundException;
-    User registerCompany(String companyPhono, String compnanyName, String email, String password) throws CustomExceptionHandler;
+//    User registerCompany(String companyPhono, String compnanyName, String email, String password) throws CustomExceptionHandler;
 }

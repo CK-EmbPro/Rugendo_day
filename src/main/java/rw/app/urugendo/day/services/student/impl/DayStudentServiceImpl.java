@@ -11,6 +11,7 @@ import rw.app.urugendo.day.models.student.dayStudent.utils.DayStudentMapper;
 import rw.app.urugendo.day.repositories.student.day.DayStudentRepo;
 import rw.app.urugendo.day.services.student.DayStudentService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -83,6 +84,7 @@ public class DayStudentServiceImpl implements DayStudentService {
         } catch (Exception e) {
             log.error("Something bad happened: {}",e.getMessage());
         }
+
         return studentDto;
     }
 
@@ -100,7 +102,7 @@ public class DayStudentServiceImpl implements DayStudentService {
 
     @Override
     public List<DayStudentDto> getStudentsBySchoolId(UUID schoolId) {
-        List<DayStudentDto> studentDtos = null;
+        List<DayStudentDto> studentDtos = new ArrayList<>();
         try {
             List<DayStudent> students = studentRepo.findDayStudentsBySchoolId(schoolId);
             studentDtos = DayStudentMapper.dayStudentListToDayStudentDtoList(students);

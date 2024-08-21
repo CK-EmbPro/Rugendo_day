@@ -16,8 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rw.app.urugendo.day.models.utils.ApiResponse;
-import rw.app.urugendo.day.security.JwtAuthentication;
-import rw.app.urugendo.day.security.UserService;
+import rw.app.urugendo.day.services.security.JwtAuthentication;
+import rw.app.urugendo.day.services.security.UserService;
 
 
 import java.io.IOException;

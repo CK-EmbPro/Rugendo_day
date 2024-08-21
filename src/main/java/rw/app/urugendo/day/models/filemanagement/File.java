@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class file {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

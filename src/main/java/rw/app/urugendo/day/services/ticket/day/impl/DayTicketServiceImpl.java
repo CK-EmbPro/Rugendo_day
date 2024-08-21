@@ -22,6 +22,8 @@ import rw.app.urugendo.day.services.Bus.day.impl.DayBusServiceImpl;
 import rw.app.urugendo.day.services.Driver.day.impl.DayDriverServiceImpl;
 import rw.app.urugendo.day.services.ticket.day.DayTicketService;
 import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -115,7 +117,7 @@ public class DayTicketServiceImpl implements DayTicketService {
 
     @Override
     public List<DayTicketDto> getAvailableDayTickets() {
-        List<DayTicketDto> availableTickets = null;
+        List<DayTicketDto> availableTickets = new ArrayList<>();
         try {
             availableTickets = dayTicketRepo.findDayTicketsByTicketStatus(ETicketStatus.AVAILABLE)
                     .stream()
@@ -136,7 +138,7 @@ public class DayTicketServiceImpl implements DayTicketService {
 
     @Override
     public List<BookedDayTicketDto> getBookedDayTickets() {
-        List<BookedDayTicketDto> bookedTicketSeats = null;
+        List<BookedDayTicketDto> bookedTicketSeats = new ArrayList<>();
         try {
             List<DayTicketDto> bookedTickets = dayTicketRepo.findDayTicketsByTicketStatus(ETicketStatus.BOOKED)
                     .stream()
@@ -156,7 +158,7 @@ public class DayTicketServiceImpl implements DayTicketService {
                             .ticketId(ticketId)
                             .seatId(seat.getSeatId())
                             .schoolId(dayTicket.getSchoolId())
-                            .bookedBy(dayTicket.getBookedBy())
+                            .bookedBy(seat.getBookedBy())
                             .departurePoint(dayTicket.getDeparturePoint())
                             .destinationPoint(dayTicket.getDestinationPoint())
                             .morningArrivalTime(dayTicket.getMorningArrivalTime())

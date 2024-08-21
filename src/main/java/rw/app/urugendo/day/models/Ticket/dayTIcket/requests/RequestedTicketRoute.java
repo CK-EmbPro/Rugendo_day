@@ -2,6 +2,7 @@ package rw.app.urugendo.day.models.Ticket.dayTIcket.requests;
 
 import jakarta.persistence.*;
 import lombok.*;
+import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.enums.ERouteRequestStatus;
 
 import java.util.UUID;
 
@@ -30,8 +31,12 @@ public class RequestedTicketRoute {
     @Column(name = "n_of_seats_requested")
     private int nOfSeatsRequested;
 
-    @Column(name = "school_code")
-    private String schoolCode;
+    @Column(name = "school_id")
+    private UUID schoolId;
+
+    @Column(name = "route_status")
+    @Enumerated(EnumType.STRING)
+    private ERouteRequestStatus routeRequestStatus;
 
 
 }

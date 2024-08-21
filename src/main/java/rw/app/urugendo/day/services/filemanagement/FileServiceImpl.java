@@ -5,10 +5,10 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import rw.app.urugendo.Exceptions.ResourceNotFoundException;
-import rw.app.urugendo.models.filemanagement.Enums.EFileSizeType;
-import rw.app.urugendo.models.filemanagement.file;
-import rw.app.urugendo.repositories.filemanagement.IFileRepository;
+import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.filemanagement.Enums.EFileSizeType;
+import rw.app.urugendo.day.models.filemanagement.File;
+import rw.app.urugendo.day.repositories.filemanagement.IFileRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,19 +30,19 @@ public class FileServiceImpl implements IFileService {
     }
 
     @Override
-    public file findById(UUID id) throws ResourceNotFoundException {
-        Optional<file> fileOptional = fileRepository.findById(id);
+    public File findById(UUID id) throws ResourceNotFoundException {
+        Optional<File> fileOptional = fileRepository.findById(id);
         if (fileOptional.isPresent()){
             return fileOptional.get();
         }
         else {
-            throw new ResourceNotFoundException("File not found","FILE_NOT_FOUND");
+            throw new ResourceNotFoundException("File not found");
         }
     }
 
     @Override
-    public file createFile(MultipartFile document) throws Exception {
-        file file = new file();
+    public File createFile(MultipartFile document) throws Exception {
+        File file = new File();
 
         String fileName = generateName(Objects.requireNonNull(document.getOriginalFilename()));
         String documentSizeType = getFileSizeTypeFromFileSize(document.getSize());

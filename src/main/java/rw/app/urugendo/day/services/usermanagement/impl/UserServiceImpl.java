@@ -12,11 +12,12 @@ import rw.app.urugendo.day.models.usermanagement.dto.LogInDetailsDTO;
 import rw.app.urugendo.day.models.usermanagement.dto.LoginDTO;
 import rw.app.urugendo.day.models.usermanagement.dto.UserRegistrationDTO;
 import rw.app.urugendo.day.repositories.usermanagement.IUserRepository;
-import rw.app.urugendo.day.security.JwtAuthentication;
+import rw.app.urugendo.day.services.security.JwtAuthentication;
 import rw.app.urugendo.day.services.usermanagement.IUserService;
 import rw.app.urugendo.day.utils.BearerTokenWrapper;
 import rw.app.urugendo.day.utils.CustomExceptionHandler;
 import rw.app.urugendo.day.utils.EmailPasswordValidator;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class UserServiceImpl implements IUserService {
     private final BearerTokenWrapper bearerTokenWrapper;
 
 
-    public UserServiceImpl(IUserRepository userRepository, JwtAuthentication jwtAuthentication, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CompanyRepository companyRepository, BearerTokenWrapper bearerTokenWrapper) {
+    public UserServiceImpl(IUserRepository userRepository, JwtAuthentication jwtAuthentication, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, BearerTokenWrapper bearerTokenWrapper) {
         this.userRepository = userRepository;
         this.jwtAuthentication = jwtAuthentication;
         this.passwordEncoder = passwordEncoder;
@@ -40,32 +41,32 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-        public LogInDetailsDTO registerUser(UserRegistrationDTO registrationDTO) throws CustomExceptionHandler {
-            if (EmailPasswordValidator.isValidGmail(registrationDTO.getEmail()) && EmailPasswordValidator.isValidPassword(registrationDTO.getPassword())){
-                User user = new User(registrationDTO.getPhoneNumber(), registrationDTO.getFirstName(), registrationDTO.getLastName(), passwordEncoder.encode(registrationDTO.getPassword()), registrationDTO.getNationalId(), registrationDTO.getEmail(), ERoles.PARENT, registrationDTO.getGender());
-                try {
-                    user = userRepository.save(user);
-                } catch (DuplicateKeyException duplicateKeyException) {
-                    throw new DuplicateKeyException("User already exists");
-                }
+    public LogInDetailsDTO registerUser(UserRegistrationDTO registrationDTO) throws CustomExceptionHandler {
+        if (EmailPasswordValidator.isValidGmail(registrationDTO.getEmail()) && EmailPasswordValidator.isValidPassword(registrationDTO.getPassword())) {
+            User user = new User(registrationDTO.getPhoneNumber(), registrationDTO.getFirstName(), registrationDTO.getLastName(), passwordEncoder.encode(registrationDTO.getPassword()), registrationDTO.getNationalId(), registrationDTO.getEmail(), ERoles.PARENT, registrationDTO.getGender());
+            try {
+                user = userRepository.save(user);
+            } catch (DuplicateKeyException duplicateKeyException) {
+                throw new DuplicateKeyException("User already exists");
+            }
 
-                Map<String, Object> claims = new HashMap<>();
-                claims.put("role", user.getRoles());
-                String token = jwtAuthentication.generateToken(claims, user);
-                return new LogInDetailsDTO(token, ERoles.PARENT, user);
-            }else{
-                if(!EmailPasswordValidator.isValidPassword(registrationDTO.getPassword())){
-                    throw new CustomExceptionHandler("Password is not valid");
-                } else if (!EmailPasswordValidator.isValidGmail(registrationDTO.getEmail())) {
-                    throw new CustomExceptionHandler("Email is not valid");
-
-                }
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("role", user.getRoles());
+            String token = jwtAuthentication.generateToken(claims, user);
+            return new LogInDetailsDTO(token, ERoles.PARENT, user);
+        } else {
+            if (!EmailPasswordValidator.isValidPassword(registrationDTO.getPassword())) {
+                throw new CustomExceptionHandler("Password is not valid");
+            } else if (!EmailPasswordValidator.isValidGmail(registrationDTO.getEmail())) {
+                throw new CustomExceptionHandler("Email is not valid");
 
             }
 
-            return null;
-
         }
+
+        return null;
+
+    }
 
     @Override
     public LogInDetailsDTO login(LoginDTO loginDTO) throws ResourceNotFoundException {
@@ -74,20 +75,27 @@ public class UserServiceImpl implements IUserService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRoles());
         String token = jwtAuthentication.generateToken(claims, user);
+        LogInDetailsDTO loginDetails = null;
         if (user.getRoles().equals(ERoles.PARENT)) {
-            return new LogInDetailsDTO(token, ERoles.PARENT, user);
+            loginDetails=  new LogInDetailsDTO(token, ERoles.PARENT, user);
 
+        }
+
+        return loginDetails;
     }
 
     @Override
-    public LogInDetailsDTO getCurrentUser(){
+    public LogInDetailsDTO getCurrentUser() {
         String token = bearerTokenWrapper.getToken();
         String email = jwtAuthentication.getUniqueIdentifier(token);
         User user = userRepository.findByEmail(email);
+        LogInDetailsDTO loginDetails = null;
         if (user.getRoles().equals(ERoles.PARENT)) {
-            return new LogInDetailsDTO(token, ERoles.PARENT, user);
+            loginDetails= new LogInDetailsDTO(token, ERoles.PARENT, user);
         }
+        return loginDetails;
     }
+}
 //
 //    @Override
 //    public User registerCompany(String companyPhono, String companyName, String companyEmail, String password) throws CustomExceptionHandler {
@@ -112,4 +120,8 @@ public class UserServiceImpl implements IUserService {
 //
 //    }
 
-}
+
+
+
+
+

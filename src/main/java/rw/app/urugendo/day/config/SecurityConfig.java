@@ -21,7 +21,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rw.app.urugendo.day.models.utils.ApiResponse;
-import rw.app.urugendo.day.security.UserService;
+import rw.app.urugendo.day.services.security.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 

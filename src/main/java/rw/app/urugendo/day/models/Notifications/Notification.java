@@ -1,22 +1,19 @@
 package rw.app.urugendo.day.models.Notifications;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import rw.app.urugendo.day.models.utils.TimeStampAudit;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "notifications")
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notifications {
+public class Notification extends TimeStampAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "notify_id", nullable = false)
@@ -25,14 +22,10 @@ public class Notifications {
     @Column(name = "sent_to", nullable = false)
     private String sentTo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "sent_at", nullable = false)
-    private LocalDateTime sentAt;
-
     @Column(name = "message", nullable = false)
     private String message;
 
-    @Column(name = "triggered_by", nullable = false)
-    private String triggeredBy;
+    @Column(name = "triggering_action", nullable = false)
+    private String triggeringAction;
 
 }

@@ -10,13 +10,17 @@ import java.util.UUID;
 
 public interface TicketRoutesRequest {
     RequestTicketRouteDto requestRoute(CreateTicketRouteRequest createTicketRouteRequest);
-    RequestTicketRouteDto updateRequest(UUID requestId, RequestUpdatingDto requestUpdatingDto);
-    RequestTicketRouteDto getSingleRequest(UUID requestId);
-    List<RequestTicketRouteDto> getAllRequests();
-    List<RequestTicketRouteDto> getAllByRequestedBy();
-    List<RequestTicketRouteDto> getAllBySchoolId(UUID schoolId);
-    boolean deleteRequest(UUID requestId);
 
-    RequestTicketRouteDto approveRequest (UUID requestId);
-    RequestTicketRouteDto rejectRequest(UUID requestId);
+    RequestTicketRouteDto updateRequest(UUID requestId, RequestUpdatingDto requestUpdatingDto);
+
+    RequestTicketRouteDto getSingleRequest(UUID requestId);
+
+    List<RequestTicketRouteDto> getAllRequests();
+
+    List<RequestTicketRouteDto> getAllByRequestedBy();
+
+    List<RequestTicketRouteDto> getAllBySchoolId(UUID schoolId);
+
+    boolean deleteRequest(UUID requestId);
 }
+

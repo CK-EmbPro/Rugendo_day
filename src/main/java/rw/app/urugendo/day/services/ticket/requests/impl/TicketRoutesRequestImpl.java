@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import rw.app.urugendo.day.Exceptions.ResourceNotFoundException;
+import rw.app.urugendo.day.models.Notifications.dto.CreateNotificationDto;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.RequestedTicketRoute;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.dto.CreateTicketRouteRequest;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.dto.RequestTicketRouteDto;
@@ -12,6 +13,7 @@ import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.utils.RequestedTicke
 import rw.app.urugendo.day.models.schoolmanagement.day.DaySchool;
 import rw.app.urugendo.day.repositories.schoolmanagement.day.DaySchoolRepo;
 import rw.app.urugendo.day.repositories.tickets.requests.TicketRequestsRepo;
+import rw.app.urugendo.day.services.notifications.impl.NotifyServiceImpl;
 import rw.app.urugendo.day.services.ticket.requests.TicketRoutesRequest;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.enums.ERouteRequestStatus;
 import rw.app.urugendo.day.services.usermanagement.impl.UserServiceImpl;
@@ -28,6 +30,7 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
     private final TicketRequestsRepo requestsRepo;
     private final DaySchoolRepo daySchoolRepo;
     private final UserServiceImpl userService;
+    private final NotifyServiceImpl notifyService;
 
     private final String requestedBy = userService.getCurrentUser().getParent().getEmail();
 
@@ -38,6 +41,13 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
             RequestedTicketRoute toBeRequested = RequestedTicketRouteMapper.createTicketRouteToRequestedRoute(createTicketRouteRequest);
             RequestedTicketRoute requested = requestsRepo.save(toBeRequested);
             routeDto = RequestedTicketRouteMapper.routeTorouteDto(requested);
+
+            CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                    .sentTo(requestedBy)
+                    .message("Congratulations !! you've managed to request for a new route")
+                    .triggeringAction("REQUEST FOR NEW SCHOOL_BUS TICKET ROUTE")
+                    .build();
+            notifyService.registerNotify(notifyDto);
         } catch (Exception e) {
             log.error("Something bad happened: {}", e.getMessage());
         }
@@ -62,6 +72,13 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
             toBeUpdated.get().setSchoolId(requestUpdatingDto.getSchoolId());
 
             routeDto = RequestedTicketRouteMapper.routeTorouteDto(requestsRepo.save(toBeUpdated.get()));
+
+            CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                    .sentTo(requestedBy)
+                    .message("Congratulations !! you've managed to update your request for a new route")
+                    .triggeringAction("REQUEST FOR NEW SCHOOL_BUS TICKET ROUTE")
+                    .build();
+            notifyService.registerNotify(notifyDto);
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
         } catch (Exception e) {
@@ -143,8 +160,17 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
             Optional<RequestedTicketRoute> toBeDeleted = requestsRepo.findById(requestId);
             if (toBeDeleted.isEmpty()) throw new ResourceNotFoundException("Ticket route requested not found");
 
+            CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                    .sentTo(requestedBy)
+                    .message("Congratulations !! you've managed to delete your request for a new route")
+                    .triggeringAction("DELETION OF REQUEST FOR NEW SCHOOL_BUS TICKET ROUTE")
+                    .build();
+
             requestsRepo.delete(toBeDeleted.get());
             isDeleted = !requestsRepo.existsById(requestId);
+            if (isDeleted){
+                notifyService.registerNotify(notifyDto);
+            }
         } catch (ResourceNotFoundException e) {
             log.error("Something bad happened: {}", e.getMessage());
         } catch (Exception e) {
@@ -154,41 +180,5 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
         return isDeleted;
     }
 
-    @Override
-    public RequestTicketRouteDto approveRequest(UUID requestId) {
-        RequestTicketRouteDto approvedRequest = null;
-        try {
-            Optional<RequestedTicketRoute> toBeApproved = requestsRepo.findById(requestId);
-            if (toBeApproved.isEmpty()) throw new ResourceNotFoundException("Ticket route requested not found");
 
-            toBeApproved.get().setRouteRequestStatus(ERouteRequestStatus.APPROVED);
-            RequestedTicketRoute approved = requestsRepo.save(toBeApproved.get());
-            approvedRequest = RequestedTicketRouteMapper.routeTorouteDto(approved);
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("Something bad happened: {}", e.getMessage());
-        }
-
-        return approvedRequest;
-    }
-
-    @Override
-    public RequestTicketRouteDto rejectRequest(UUID requestId) {
-        RequestTicketRouteDto rejectedRequest = null;
-        try {
-            Optional<RequestedTicketRoute> toBeApproved = requestsRepo.findById(requestId);
-            if (toBeApproved.isEmpty()) throw new ResourceNotFoundException("Ticket route requested not found");
-
-            toBeApproved.get().setRouteRequestStatus(ERouteRequestStatus.REJECTED);
-            RequestedTicketRoute rejected = requestsRepo.save(toBeApproved.get());
-            rejectedRequest = RequestedTicketRouteMapper.routeTorouteDto(rejected);
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("Something bad happened: {}", e.getMessage());
-        }
-
-        return rejectedRequest;
-    }
 }

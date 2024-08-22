@@ -9,6 +9,8 @@ import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.AssignedDriver
 import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.dto.AssignedDriverDto;
 import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.utils.AssignedDriverMapper;
 import rw.app.urugendo.day.models.Driver.dayDriver.registeredDriver.dto.RegisteredDriverDto;
+import rw.app.urugendo.day.models.Notifications.dto.CreateNotificationDto;
+import rw.app.urugendo.day.models.Notifications.dto.NotificationDto;
 import rw.app.urugendo.day.models.Ticket.Enum.ETicketStatus;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.DayTicket;
 import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookedDayTicketDto;
@@ -20,8 +22,10 @@ import rw.app.urugendo.day.repositories.Driver.day.assigned.AssignedDayDriverRep
 import rw.app.urugendo.day.repositories.tickets.day.DayTicketRepo;
 import rw.app.urugendo.day.services.Bus.day.impl.DayBusServiceImpl;
 import rw.app.urugendo.day.services.Driver.day.impl.DayDriverServiceImpl;
+import rw.app.urugendo.day.services.notifications.impl.NotifyServiceImpl;
 import rw.app.urugendo.day.services.ticket.day.DayTicketService;
 import rw.app.urugendo.day.services.ticket.seatImpl.SeatServiceImpl;
+import rw.app.urugendo.day.services.usermanagement.impl.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,10 @@ public class DayTicketServiceImpl implements DayTicketService {
     private final DayBusServiceImpl busService;
     private final AssignedDayDriverRepo assignedDayDriverRepo;
     private final SeatServiceImpl seatService;
+    private final UserServiceImpl userService;
+    private final NotifyServiceImpl notifyService;
+
+    private String currentUser  = userService.getCurrentUser().getParent().getEmail();
 
     @Override
     public DayTicketDto registerDayTicket(CreateDayTicketDto createDayTicketDto) {
@@ -50,6 +58,13 @@ public class DayTicketServiceImpl implements DayTicketService {
                 ticket.setAvailableSeats(carToBeAssigned.getNOfSeats());
                 DayTicket registeredTicket = dayTicketRepo.save(ticket);
                 registereddayTicket = DayTicketsMapper.dayTicketToDayTicketDto(registeredTicket);
+
+                CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                        .sentTo(currentUser)
+                        .message("Congratulations !! you've managed to create school_bus ticket")
+                        .triggeringAction("REGISTRATION OF SCHOOL_BUS TICKET")
+                        .build();
+                notifyService.registerNotify(notifyDto);
             }
 
         } catch (Exception e) {
@@ -105,6 +120,13 @@ public class DayTicketServiceImpl implements DayTicketService {
             DayTicket updatedTicket = dayTicketRepo.save(toBeUpdated.get());
             ticketDto = DayTicketsMapper.dayTicketToDayTicketDto(updatedTicket);
 
+            CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                    .sentTo(currentUser)
+                    .message("Congratulations !! you've managed to update school_bus ticket: "+updatedTicket.getTicketId())
+                    .triggeringAction("UPDATE OF SCHOOL_BUS TICKET")
+                    .build();
+
+            notifyService.registerNotify(notifyDto);
         }catch (ResourceNotFoundException e){
             log.error(e.getMessage());
         }catch (Exception e){
@@ -195,9 +217,21 @@ public class DayTicketServiceImpl implements DayTicketService {
 
             Optional<DayTicket> ticket = dayTicketRepo.findById(ticketId);
             if(ticket.isEmpty()) throw new ResourceNotFoundException("ticket not found");
+//+++++++++++++++Notifying user++++++++++++++++++++
+            CreateNotificationDto notifyDto = CreateNotificationDto.builder()
+                    .sentTo(currentUser)
+                    .message("Congratulations !! you've managed to delete school_bus ticket: "+ticket.get().getTicketId())
+                    .triggeringAction("DELETIONS OF SCHOOL_BUS TICKET")
+                    .build();
+
+//+++++++++++++++Notifying user++++++++++++++++++++
 
             dayTicketRepo.delete(ticket.get());
-            return !dayTicketRepo.existsById(ticketId);
+
+//+++++++++++++++Notifying user++++++++++++++++++++
+            notifyService.registerNotify(notifyDto);
+//+++++++++++++++Notifying user++++++++++++++++++++
+
         }catch (ResourceNotFoundException e){
             log.error(e.getMessage());
         } catch (Exception e){

@@ -1,5 +1,6 @@
 package rw.app.urugendo.day.services.schoolmanagement.day;
 
+import rw.app.urugendo.day.models.Ticket.dayTIcket.requests.dto.RequestTicketRouteDto;
 import rw.app.urugendo.day.models.schoolmanagement.day.dto.CreateDaySchoolDto;
 import rw.app.urugendo.day.models.schoolmanagement.day.dto.DaySchoolDto;
 
@@ -15,4 +16,6 @@ public interface DaySchoolService {
     boolean deleteSchoolByCode(String schoolCode);
     boolean deleteSchoolById(UUID schoolId);
 
+    RequestTicketRouteDto approveRequest (UUID requestId);
+    RequestTicketRouteDto rejectRequest(UUID requestId);
 }

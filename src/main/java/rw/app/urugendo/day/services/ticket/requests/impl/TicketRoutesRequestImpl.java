@@ -32,7 +32,6 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
     private final UserServiceImpl userService;
     private final NotifyServiceImpl notifyService;
 
-    private final String requestedBy = userService.getCurrentUser().getParent().getEmail();
 
     @Override
     public RequestTicketRouteDto requestRoute(CreateTicketRouteRequest createTicketRouteRequest) {
@@ -41,6 +40,8 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
             RequestedTicketRoute toBeRequested = RequestedTicketRouteMapper.createTicketRouteToRequestedRoute(createTicketRouteRequest);
             RequestedTicketRoute requested = requestsRepo.save(toBeRequested);
             routeDto = RequestedTicketRouteMapper.routeTorouteDto(requested);
+
+            String requestedBy = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                     .sentTo(requestedBy)
@@ -72,6 +73,8 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
             toBeUpdated.get().setSchoolId(requestUpdatingDto.getSchoolId());
 
             routeDto = RequestedTicketRouteMapper.routeTorouteDto(requestsRepo.save(toBeUpdated.get()));
+
+            String requestedBy = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                     .sentTo(requestedBy)
@@ -125,6 +128,8 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
     public List<RequestTicketRouteDto> getAllByRequestedBy() {
         List<RequestTicketRouteDto> routeDtos = new ArrayList<>();
         try {
+            String requestedBy = userService.getCurrentUser().getParent().getEmail();
+
             List<RequestedTicketRoute> routesRequested = requestsRepo.findRequestedTicketRoutesByRequestedBy(requestedBy);
             routeDtos = routesRequested
                     .stream()
@@ -159,6 +164,8 @@ public class TicketRoutesRequestImpl implements TicketRoutesRequest {
         try {
             Optional<RequestedTicketRoute> toBeDeleted = requestsRepo.findById(requestId);
             if (toBeDeleted.isEmpty()) throw new ResourceNotFoundException("Ticket route requested not found");
+
+            String requestedBy = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                     .sentTo(requestedBy)

@@ -45,7 +45,6 @@ public class DayTicketServiceImpl implements DayTicketService {
     private final UserServiceImpl userService;
     private final NotifyServiceImpl notifyService;
 
-    private String currentUser  = userService.getCurrentUser().getParent().getEmail();
 
     @Override
     public DayTicketDto registerDayTicket(CreateDayTicketDto createDayTicketDto) {
@@ -58,6 +57,7 @@ public class DayTicketServiceImpl implements DayTicketService {
                 ticket.setAvailableSeats(carToBeAssigned.getNOfSeats());
                 DayTicket registeredTicket = dayTicketRepo.save(ticket);
                 registereddayTicket = DayTicketsMapper.dayTicketToDayTicketDto(registeredTicket);
+               String currentUser  = userService.getCurrentUser().getParent().getEmail();
 
                 CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                         .sentTo(currentUser)
@@ -119,6 +119,8 @@ public class DayTicketServiceImpl implements DayTicketService {
 
             DayTicket updatedTicket = dayTicketRepo.save(toBeUpdated.get());
             ticketDto = DayTicketsMapper.dayTicketToDayTicketDto(updatedTicket);
+
+            String currentUser  = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                     .sentTo(currentUser)
@@ -218,6 +220,8 @@ public class DayTicketServiceImpl implements DayTicketService {
             Optional<DayTicket> ticket = dayTicketRepo.findById(ticketId);
             if(ticket.isEmpty()) throw new ResourceNotFoundException("ticket not found");
 //+++++++++++++++Notifying user++++++++++++++++++++
+            String currentUser  = userService.getCurrentUser().getParent().getEmail();
+
             CreateNotificationDto notifyDto = CreateNotificationDto.builder()
                     .sentTo(currentUser)
                     .message("Congratulations !! you've managed to delete school_bus ticket: "+ticket.get().getTicketId())

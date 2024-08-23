@@ -32,7 +32,6 @@ public class DaySchoolServiceImpl implements DaySchoolService {
     private final TicketRequestsRepo requestsRepo;
     private final UserServiceImpl userService;
     private final NotifyServiceImpl notifyService;
-    private String currentUser = userService.getCurrentUser().getParent().getEmail();
 
     @Override
     public DaySchoolDto registerDaySchool(CreateDaySchoolDto createDaySchoolDto) {
@@ -167,6 +166,8 @@ public class DaySchoolServiceImpl implements DaySchoolService {
             toBeApproved.get().setRouteRequestStatus(ERouteRequestStatus.APPROVED);
             RequestedTicketRoute approved = requestsRepo.save(toBeApproved.get());
             approvedRequest = RequestedTicketRouteMapper.routeTorouteDto(approved);
+            String currentUser = userService.getCurrentUser().getParent().getEmail();
+
             CreateNotificationDto notifySchool = CreateNotificationDto.builder()
                     .sentTo(currentUser)
                     .message("Congratulations !! you've managed to approve request for a new route")
@@ -200,6 +201,8 @@ public class DaySchoolServiceImpl implements DaySchoolService {
             toBeApproved.get().setRouteRequestStatus(ERouteRequestStatus.REJECTED);
             RequestedTicketRoute rejected = requestsRepo.save(toBeApproved.get());
             rejectedRequest = RequestedTicketRouteMapper.routeTorouteDto(rejected);
+
+            String currentUser = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifySchool = CreateNotificationDto.builder()
                     .sentTo(currentUser)

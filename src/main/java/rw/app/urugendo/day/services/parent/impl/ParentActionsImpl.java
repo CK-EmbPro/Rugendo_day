@@ -42,7 +42,7 @@ public class ParentActionsImpl implements ParentActions {
     private String fromEmailId;
     @Override
 
-    public synchronized BookedDayTicketDto bookStudentTicket(BookingDayTicketDto toBeBookedTicket) throws ResourceNotFoundException {
+    public synchronized BookedDayTicketDto bookStudentTicket(BookingDayTicketDto toBeBookedTicket) {
         BookedDayTicketDto bookedTicket = null;
         try {
             String bookingEmail = userService.getCurrentUser().getParent().getEmail();
@@ -121,7 +121,7 @@ public class ParentActionsImpl implements ParentActions {
     }
 
     @Override
-    public List<BookedDayTicketDto> viewBookedTickets() throws ResourceNotFoundException {
+    public List<BookedDayTicketDto> viewBookedTickets()  {
         String bookingEmail = userService.getCurrentUser().getParent().getEmail();
         List<SeatDto> bookedSeats = seatService.getSeatsByBookedBy(bookingEmail);
 

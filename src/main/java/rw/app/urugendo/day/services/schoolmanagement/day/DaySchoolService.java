@@ -10,10 +10,10 @@ import java.util.UUID;
 public interface DaySchoolService {
     DaySchoolDto registerDaySchool(CreateDaySchoolDto createDaySchoolDto);
     DaySchoolDto updateDaySchool(UUID schoolId, DaySchoolDto daySchoolDto);
-    DaySchoolDto getSchoolByCode(String schoolCode);
+//    DaySchoolDto getSchoolByCode(String schoolCode);
     List<DaySchoolDto> getAllSchools();
     DaySchoolDto getSchoolById(UUID schoolId);
-    boolean deleteSchoolByCode(String schoolCode);
+//    boolean deleteSchoolByCode(String schoolCode);
     boolean deleteSchoolById(UUID schoolId);
 
     RequestTicketRouteDto approveRequest (UUID requestId);

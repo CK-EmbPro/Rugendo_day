@@ -7,7 +7,7 @@ import rw.app.urugendo.day.models.Ticket.dayTIcket.dto.BookingDayTicketDto;
 import java.util.List;
 
 public interface ParentActions {
-    BookedDayTicketDto bookStudentTicket(BookingDayTicketDto ticketDto) throws ResourceNotFoundException;
-    List<BookedDayTicketDto> viewBookedTickets() throws ResourceNotFoundException;
+    BookedDayTicketDto bookStudentTicket(BookingDayTicketDto ticketDto);
+    List<BookedDayTicketDto> viewBookedTickets();
 
 }

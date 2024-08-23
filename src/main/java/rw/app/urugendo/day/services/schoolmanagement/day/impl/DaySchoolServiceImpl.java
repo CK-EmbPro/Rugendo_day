@@ -74,20 +74,20 @@ public class DaySchoolServiceImpl implements DaySchoolService {
         return updatedSchoolDto;
     }
 
-    @Override
-    public DaySchoolDto getSchoolByCode(String schoolCode) {
-        DaySchoolDto schoolDto = null;
-        try {
-            Optional<DaySchool> school = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
-            if (school.isEmpty()) throw new ResourceNotFoundException("school not found");
-            schoolDto = DaySchoolMapper.daySchoolToDaySchoolDto(school.get());
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("Something bad happened: {}", e.getMessage());
-        }
-        return schoolDto;
-    }
+//    @Override
+//    public DaySchoolDto getSchoolByCode(String schoolCode) {
+//        DaySchoolDto schoolDto = null;
+//        try {
+//            Optional<DaySchool> school = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
+//            if (school.isEmpty()) throw new ResourceNotFoundException("school not found");
+//            schoolDto = DaySchoolMapper.daySchoolToDaySchoolDto(school.get());
+//        } catch (ResourceNotFoundException e) {
+//            log.error(e.getMessage());
+//        } catch (Exception e) {
+//            log.error("Something bad happened: {}", e.getMessage());
+//        }
+//        return schoolDto;
+//    }
 
     @Override
     public List<DaySchoolDto> getAllSchools() {
@@ -120,24 +120,24 @@ public class DaySchoolServiceImpl implements DaySchoolService {
         return schoolDto;
     }
 
-    @Override
-    public boolean deleteSchoolByCode(String schoolCode) {
-        boolean isDeleted = false;
-        try {
-            Optional<DaySchool> school = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
-            if (school.isEmpty()) throw new ResourceNotFoundException("school not found");
-            schoolRepo.delete(school.get());
-            Optional<DaySchool> isSchoolPresent = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
-
-            isDeleted = isSchoolPresent.isEmpty();
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage());
-        } catch (Exception e) {
-            log.error("Something bad happened: {}", e.getMessage());
-        }
-
-        return isDeleted;
-    }
+//    @Override
+//    public boolean deleteSchoolByCode(String schoolCode) {
+//        boolean isDeleted = false;
+//        try {
+//            Optional<DaySchool> school = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
+//            if (school.isEmpty()) throw new ResourceNotFoundException("school not found");
+//            schoolRepo.delete(school.get());
+//            Optional<DaySchool> isSchoolPresent = schoolRepo.findDaySchoolBySchoolCode(schoolCode);
+//
+//            isDeleted = isSchoolPresent.isEmpty();
+//        } catch (ResourceNotFoundException e) {
+//            log.error(e.getMessage());
+//        } catch (Exception e) {
+//            log.error("Something bad happened: {}", e.getMessage());
+//        }
+//
+//        return isDeleted;
+//    }
 
     @Override
     public boolean deleteSchoolById(UUID schoolId) {
@@ -166,6 +166,7 @@ public class DaySchoolServiceImpl implements DaySchoolService {
             toBeApproved.get().setRouteRequestStatus(ERouteRequestStatus.APPROVED);
             RequestedTicketRoute approved = requestsRepo.save(toBeApproved.get());
             approvedRequest = RequestedTicketRouteMapper.routeTorouteDto(approved);
+
             String currentUser = userService.getCurrentUser().getParent().getEmail();
 
             CreateNotificationDto notifySchool = CreateNotificationDto.builder()

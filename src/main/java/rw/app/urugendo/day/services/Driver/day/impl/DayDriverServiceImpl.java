@@ -17,6 +17,8 @@ import rw.app.urugendo.day.repositories.Driver.day.registered.RegisteredDayDrive
 import rw.app.urugendo.day.services.Driver.day.DayDriverService;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -83,6 +85,23 @@ public class DayDriverServiceImpl implements DayDriverService {
         }
 
         return registeredDriverDto;
+    }
+
+    @Override
+    public List<RegisteredDriverDto> getAllRegisteredDriver() {
+        List<RegisteredDriverDto> driverDtos = new ArrayList<>();
+
+        try {
+            List<RegisteredDriver> drivers = registeredDayDriverRepo.findAll();
+            driverDtos = drivers
+                    .stream()
+                    .map(RegisteredDriverMapper::registeredDriverToRegisteredDriverDto)
+                    .toList();
+        } catch (Exception e) {
+            log.error("Something bad happened: {}", e.getMessage());
+        }
+
+        return driverDtos;
     }
 
     @Override

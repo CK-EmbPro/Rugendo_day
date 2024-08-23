@@ -6,6 +6,7 @@ import rw.app.urugendo.day.models.Driver.dayDriver.assignedDriver.dto.CreateAssi
 import rw.app.urugendo.day.models.Driver.dayDriver.registeredDriver.dto.CreateRegisteredDriverDto;
 import rw.app.urugendo.day.models.Driver.dayDriver.registeredDriver.dto.RegisteredDriverDto;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface DayDriverService {
@@ -13,6 +14,7 @@ public interface DayDriverService {
     RegisteredDriverDto registerRegisteredDriver(CreateRegisteredDriverDto createRegisteredDriverDto);
     RegisteredDriverDto updateRegisteredDriver(UUID driverId, RegisteredDriverDto registeredDriverDto);
     RegisteredDriverDto getRegisteredDriverById(UUID registeredDriverId);
+    List<RegisteredDriverDto> getAllRegisteredDriver();
     RegisteredDriverDto getRegisteredDriverByEmail(String email);
 
     boolean isRegisteredDriverDeleted(UUID registeredDriverId);

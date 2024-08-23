@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BadRequestException extends Exception{
     private String errorCode;
     private LocalDateTime timeStamp;
-    public BadRequestException(String message,String errorCode){
+    public BadRequestException(String message){
         super(message);
         this.errorCode = errorCode;
         this.timeStamp = LocalDateTime.now();
